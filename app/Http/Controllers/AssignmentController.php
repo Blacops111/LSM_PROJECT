@@ -7,48 +7,33 @@ use Illuminate\Http\Request;
 
 class AssignmentController extends Controller
 {
-    public function index()
-    {
-        $assignments = Assignment::all();
-        return view('admin.assignments.index', compact('assignments'));
-    }
-
     public function create()
     {
-        return view('admin.assignments.create');
+        return view('assignments.create');
     }
 
     public function store(Request $request)
     {
         $request->validate([
+            'course_id' => 'required|exists:courses,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'course_id' => 'required|exists:courses,id',
+            'deadline' => 'required|date',
         ]);
 
         Assignment::create($request->all());
-        return redirect()->route('assignments.index')->with('success', 'Assignment created successfully.');
+
+        return redirect()->route('courses.index')->with('success', 'Assignment created successfully.');
     }
 
-    public function edit(Assignment $assignment)
+    public function submit(Request $request, Assignment $assignment)
     {
-        return view('admin.assignments.edit', compact('assignment'));
-    }
+        $request->validate(['file' => 'required|file']);
 
-    public function update(Request $request, Assignment $assignment)
-    {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-        ]);
+        $path = $request->file('file')->store('assignments');
 
-        $assignment->update($request->all());
-        return redirect()->route('assignments.index')->with('success', 'Assignment updated successfully.');
-    }
+        auth()->user()->assignments()->attach($assignment, ['file_path' => $path]);
 
-    public function destroy(Assignment $assignment)
-    {
-        $assignment->delete();
-        return redirect()->route('assignments.index')->with('success', 'Assignment deleted successfully.');
+        return redirect()->back()->with('success', 'Assignment submitted.');
     }
 }

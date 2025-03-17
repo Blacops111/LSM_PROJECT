@@ -10,12 +10,13 @@ class CreateCoursesTable extends Migration
     {
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->string('title'); // Ensure this line exists
+            $table->string('title');
             $table->text('description');
             $table->foreignId('teacher_id')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });
     }
+    
     public function down()
     {
         Schema::dropIfExists('courses');

@@ -10,14 +10,14 @@ class CreateAssignmentsTable extends Migration
     {
         Schema::create('assignments', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('course_id')->constrained('courses')->onDelete('cascade');
             $table->string('title');
             $table->text('description');
-            $table->foreignId('course_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade'); // Add this line
-            $table->dateTime('due_date');
+            $table->dateTime('deadline');
             $table->timestamps();
         });
     }
+    
 
     public function down()
     {

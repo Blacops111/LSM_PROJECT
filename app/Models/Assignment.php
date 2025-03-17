@@ -10,17 +10,16 @@ class Assignment extends Model
     use HasFactory;
 
     protected $fillable = [
-        'title',
-        'description',
-        'course_id', // Foreign key for the course
-        'due_date',
+        'course_id', 'title', 'description', 'deadline',
     ];
 
-    public function course() {
-        return $this->belongsTo(Course::class); // Relationship to course
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
     }
 
-    public function user() {
-        return $this->belongsTo(User::class); // Relationship to user
+    public function students()
+    {
+        return $this->belongsToMany(User::class)->withPivot('file_path', 'grade');
     }
 }

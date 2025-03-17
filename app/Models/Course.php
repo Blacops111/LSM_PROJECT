@@ -9,7 +9,22 @@ class Course extends Model
 {
     use HasFactory;
 
-    public function assignments() {
-        return $this->hasMany(Assignment::class); // Relationship to assignments
+    protected $fillable = [
+        'title', 'description', 'teacher_id',
+    ];
+
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function students()
+    {
+        return $this->belongsToMany(User::class);
+    }
+
+    public function assignments()
+    {
+        return $this->hasMany(Assignment::class);
     }
 }

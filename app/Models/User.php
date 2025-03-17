@@ -2,77 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role', // Added role attribute
+        'name', 'email', 'password', 'role',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
-        'password',
-        'remember_token',
+        'password', 'remember_token',
     ];
 
-    /**
-     * The attributes that should be cast.
-     *
-     * @var array<string, string>
-     */
     protected $casts = [
-        'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
 
-    /**
-     * Relationship: A user can enroll in multiple courses.
-     */
     public function courses()
     {
         return $this->belongsToMany(Course::class);
     }
 
-    /**
-     * Relationship: A user can have multiple assignments.
-     */
     public function assignments()
     {
-        return $this->hasMany(Assignment::class);
-    }
-
-    /**
-     * Check if the user is a teacher.
-     */
-    public function isTeacher()
-    {
-        return $this->role === 'teacher';
-    }
-
-    /**
-     * Check if the user is a student.
-     */
-    public function isStudent()
-    {
-        return $this->role === 'student';
+        return $this->belongsToMany(Assignment::class)->withPivot('file_path', 'grade');
     }
 }
-
